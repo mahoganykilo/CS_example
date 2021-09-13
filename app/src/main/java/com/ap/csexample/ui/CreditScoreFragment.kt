@@ -1,32 +1,42 @@
 package com.ap.csexample.ui
 
+import android.animation.ArgbEvaluator
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.text.style.RelativeSizeSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.ap.csexample.R
 import com.ap.csexample.animations.ProgressBarAnimation
 import com.ap.csexample.animations.circularReveal
 import com.ap.csexample.databinding.CreditscoreFragmentBinding
+import com.ap.csexample.di.ViewModelFactory
 import com.ap.csexample.models.UiState
-import dagger.hilt.android.AndroidEntryPoint
+import dagger.android.support.DaggerFragment
+import javax.inject.Inject
 
 /**
  * Fragment for displaying the Credit Score.
  */
-@AndroidEntryPoint
-class CreditScoreFragment : Fragment() {
+@Suppress("TooManyFunctions")
+class CreditScoreFragment : DaggerFragment() {
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory<CreditScoreViewModel>
 
     // In a more complicated application (where classes need to be injected) we would provide the
     // viewModel via a factory that injects it automatically.
-    private val mViewModel: CreditScoreViewModel by viewModels()
+    private val mViewModel by viewModels<CreditScoreViewModel> { viewModelFactory }
     private lateinit var mBinding: CreditscoreFragmentBinding
 
     companion object {
         const val PROGRESS_START = 0
         const val PROGRESS_MAX = 700
+        const val RELATIVE_SCORE_SIZE = 3.8f
+        const val MIDWAY_POINT = 0.5
 
     }
 
@@ -39,6 +49,7 @@ class CreditScoreFragment : Fragment() {
         setupButtonClickListener()
         observeCreditReportScore()
         observeUiState()
+
         return mBinding.root
     }
 
@@ -59,12 +70,8 @@ class CreditScoreFragment : Fragment() {
     /**
      * Determine the current UI state and then perform the rendering actions related to that state.
      * @param uiState The [UiState] to render.
-     *
-     * This method has been made public for the sake of testing - typically something that I try to
-     * avoid however I was struggling to work out the best way of testing the UI state changes
-     * on this Fragment.
      */
-    fun renderState(uiState: UiState) {
+    private fun renderState(uiState: UiState) {
         when (uiState) {
             is UiState.InitialState -> {
                 /**No-Op*/
@@ -136,22 +143,67 @@ class CreditScoreFragment : Fragment() {
     /**
      * Set the credit score and animate the progress bar.
      * @param creditReportScore The score to be set.
-     *
-     * Like [renderState], this method was made public solely for testing purposes. Given more time,
-     * I'd like to determine a way of testing these privately.
      */
-    fun handleScoreUpdate(creditReportScore: Int) {
+    private fun handleScoreUpdate(creditReportScore: Int) {
+
         val animation = ProgressBarAnimation(
             mBinding.progressDoughnut,
             PROGRESS_START,
             creditReportScore
         )
         mBinding.progressDoughnut.max = PROGRESS_MAX
-        mBinding.textViewProgress.text = String.format(
-            requireContext().getString(R.string.credit_score_text),
-            creditReportScore,
-            PROGRESS_MAX
-        )
+        mBinding.textViewProgress.text = generateScoreString(creditReportScore)
         mBinding.progressDoughnut.startAnimation(animation)
     }
+
+    /**
+     * Perform the formatting on the score string to increase the score size and programmatically
+     * set the colour to match the transition.
+     * @param score The credit score to be formatted within the string.
+     */
+    private fun generateScoreString(score: Int): SpannableString {
+        val stringifiedScore = score.toString()
+        val scoreString =
+            String.format(
+                requireContext().getString(R.string.credit_score_text),
+                score,
+                PROGRESS_MAX
+            )
+        val wordPosition = scoreString.indexOf(stringifiedScore)
+        val spannedString = SpannableString(scoreString)
+        spannedString.setSpan(
+            RelativeSizeSpan(RELATIVE_SCORE_SIZE),
+            wordPosition,
+            wordPosition + stringifiedScore.length,
+            0
+        )
+        spannedString.setSpan(
+            ForegroundColorSpan(calculateTextColour(score)),
+            wordPosition,
+            wordPosition + stringifiedScore.length,
+            0
+        )
+        return spannedString
+    }
+
+    /**
+     * Uses an RGBA evaluator to calculate the progress of the sweep gradient, and ensure that the
+     * text colour matches.
+     * @param score The credit score, used to calculate the gradient point reached on the progress
+     * bar.
+     */
+    private fun calculateTextColour(score: Int): Int {
+        val startColour = resources.getColor(R.color.orange_500, null)
+        val middleColour = resources.getColor(R.color.yellow_500, null)
+        val endColour = resources.getColor(R.color.green_500, null)
+        val ratio = score.toFloat() / PROGRESS_MAX
+        val evaluator = ArgbEvaluator()
+        val textColour = if (ratio > MIDWAY_POINT) {
+            evaluator.evaluate(ratio, middleColour, endColour)
+        } else {
+            evaluator.evaluate(ratio, startColour, middleColour)
+        }
+        return textColour as Int
+    }
+
 }

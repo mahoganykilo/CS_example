@@ -1,14 +1,25 @@
 package com.ap.csexample
 
-import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
+import com.ap.csexample.di.ApplicationComponent
+import com.ap.csexample.di.DaggerApplicationComponent
+import dagger.android.AndroidInjector
+import dagger.android.DaggerApplication
 import timber.log.Timber
 
 /**
  * Main application for the CS Example app.
  */
-@HiltAndroidApp
-class MainApplication : Application() {
+class MainApplication : DaggerApplication() {
+
+    companion object {
+        lateinit var applicationComponent: ApplicationComponent
+    }
+
+    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
+        applicationComponent = DaggerApplicationComponent.factory().create(applicationContext)
+        return applicationComponent
+    }
+
     override fun onCreate() {
         super.onCreate()
 

@@ -13,6 +13,7 @@ class CreditReportRepositoryImpl @Inject constructor(
     private val mApi: CreditReportRestApi
 ) : CreditReportRepository {
 
+
     /**
      * Obtains the full [CreditScoreReport] for a user.
      * @return The full [CreditScoreReport] report.
