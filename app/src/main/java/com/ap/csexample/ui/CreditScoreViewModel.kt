@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.ap.creditreport.CreditReportApiException
 import com.ap.creditreport.CreditReportRepository
 import com.ap.csexample.models.UiState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -15,11 +14,10 @@ import javax.inject.Inject
 /**
  * [ViewModel] for [CreditScoreFragment].
  */
-@HiltViewModel
 class CreditScoreViewModel @Inject constructor(
     private val mCreditScoreReportRepository: CreditReportRepository
 ) : ViewModel() {
-
+    
     private var _creditReportScore: MutableLiveData<Int> = MutableLiveData(null)
     val creditReportScore: LiveData<Int> = _creditReportScore
 

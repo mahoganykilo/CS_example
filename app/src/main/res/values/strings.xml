@@ -7,4 +7,5 @@
     <string name="credit_score_error_text">An error occurred, please try again later</string>
     <string name="credit_score_text">Your credit score is\n %1$d \nout of %2$d</string>
     <string name="credit_score_view">Credit Score View</string>
+    <string name="outer_ring_content_description">A ring surrounding the progress bar</string>
 </resources>

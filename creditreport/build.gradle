@@ -2,7 +2,6 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'kotlin-kapt'
-    id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -29,25 +28,15 @@ android {
         implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
         implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
 
-        // Dependency Injection
-        implementation "com.google.dagger:hilt-android:$hilt_version"
-        kapt "com.google.dagger:hilt-compiler:$hilt_version"
-
-        // For instrumentation tests
-        androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
-        kaptAndroidTest "com.google.dagger:hilt-compiler:$hilt_version"
-
-        // For local unit tests
-        testImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
-        kaptTest "com.google.dagger:hilt-compiler:$hilt_version"
+    implementation "com.google.dagger:dagger:$dagger_version"
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+    implementation "com.google.dagger:dagger-android-support:$dagger_version"
+    kapt "com.google.dagger:dagger-android-processor:$dagger_version"
+    kaptAndroidTest "com.google.dagger:dagger-compiler:$dagger_version"
+    kaptTest "com.google.dagger:dagger-compiler:$dagger_version"
 
         // Testing
         testImplementation "junit:junit:$junit_version"
         testImplementation "io.mockk:mockk:$mockk_version"
-
     }
-}
-
-kapt {
-    correctErrorTypes true
 }
