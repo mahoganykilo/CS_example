@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">CS example</string>
+    <string name="begin_credit_score_fetch_button_text">Begin</string>
+    <string name="credit_score_intro_text">Hello!\nAre you ready to discover your credit score?</string>
+    <string name="credit_score_loading_text">Fetching Credit Report Score</string>
+    <string name="credit_score_success_text">Here is your credit score!</string>
+    <string name="credit_score_error_text">An error occurred, please try again later</string>
+    <string name="credit_score_text">Your credit score is\n %1$d \nout of %2$d</string>
+    <string name="credit_score_view">Credit Score View</string>
+</resources>

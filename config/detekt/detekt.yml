@@ -1,0 +1,16 @@
+formatting:
+  NoWildcardImports:
+    active: true
+comments:
+    UndocumentedPublicClass:
+      active: true
+    UndocumentedPublicFunction:
+      active: true
+    EndOfSentenceFormat:
+      active: true
+complexity:
+  NestedBlockDepth:
+    threshold: 5
+style:
+    NewLineAtEndOfFile:
+      active: false
